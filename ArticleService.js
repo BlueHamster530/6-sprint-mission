@@ -39,22 +39,6 @@ export async function getArticle(articleId) {
       console.error(error);
       throw error;
     });
-  // 초기 await 버전
-  // try {
-  //   const data = await fetch(`https://panda-market-api-crud.vercel.app/articles/${articleId}`);
-  //   console.log('=====getArticleData=====');
-  //   const body = await data.json();
-  //   if (!data.ok) {
-  //     console.error(`전송 상태: ${data.status}`);
-  //     throw new Error(`전송 상태 에러`);
-  //   }
-  //   console.log(body);
-  //   console.log('=====getArticleData End=====');
-  //   return data;
-  // } catch (error) {
-  //   console.error(error);
-  //   throw error;
-  // }
 }
 export async function createArticle(articleData) {
   try {

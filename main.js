@@ -79,9 +79,9 @@ async function CreateProduct(name, decription, prcie, tags, images, manufacturer
 }
 
 async function DoTest() {
-  // console.log('Article 관련 함수 시작');
-  // await DoItArticleThings();
-  // console.log('Article 관련 함수 종료');
+  console.log('Article 관련 함수 시작');
+  await DoItArticleThings();
+  console.log('Article 관련 함수 종료');
   console.log('Product 관련 함수 시작');
   await DoItProductThings();
   console.log('Product 관련 함수 종료');
