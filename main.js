@@ -1,27 +1,7 @@
 import { getArticleList, getArticle, createArticle } from './ArticleService.js';
 import { getProduct, getProductList, PostProduct, patchProduct, deleteProduct } from './ProductService.js';
-
-class Product {
-  constructor(name, description, prcie, tags, images) {
-    this.name = name;
-    this.description = description;
-    this.price = prcie;
-    this.tags = tags;
-    this.images = images;
-    this.favoriteCount = 0;
-    this.createdAt = new Date();
-  }
-  favorite() {
-    this.favoriteCount += 1;
-  }
-}
-
-class ElectronicProduct extends Product {
-  constructor(name, decription, prcie, tags, images, manufacturerr) {
-    super(name, decription, prcie, tags, images);
-    this.manufacturerr = manufacturerr;
-  }
-}
+import { Product } from './product.js';
+import { ElectronicProduct } from './ElectronicProduct.js';
 
 class Article {
   constructor(title, content, writer) {
@@ -61,8 +41,8 @@ async function DoItProductThings() {
     return;
   }
 
-  product.description = '가격 2배 이벤트.';
-  product.price = 20000;
+  product._description = '가격 2배 이벤트.';
+  product.SetPrice = 20000;
   const updatedProduct = await patchProduct(product.id, product);
   const isDeleted = await deleteProduct(product.id);
   console.log('삭제 완료:', isDeleted);
@@ -82,7 +62,7 @@ async function DoItProductThings() {
       prod.manufacturerr ? prod.manufacturerr : ''
     );
     // 필요한 값만 복사
-    newP.createdAt = prod.createdAt;
+    newP.SetCreatedAt(prod._createdAt);
     Products.push(newP);
   }
   console.log(Products);
@@ -90,7 +70,7 @@ async function DoItProductThings() {
 
 async function CreateProduct(name, decription, prcie, tags, images, manufacturerr = '') {
   let newProduct;
-  if (tags.includes === '전자제품') {
+  if (tags.includes('전자제품')) {
     newProduct = new ElectronicProduct(name, decription, prcie, tags, images, manufacturerr);
   } else {
     newProduct = new Product(name, decription, prcie, tags, images);
@@ -99,9 +79,9 @@ async function CreateProduct(name, decription, prcie, tags, images, manufacturer
 }
 
 async function DoTest() {
-  console.log('Article 관련 함수 시작');
-  await DoItArticleThings();
-  console.log('Article 관련 함수 종료');
+  // console.log('Article 관련 함수 시작');
+  // await DoItArticleThings();
+  // console.log('Article 관련 함수 종료');
   console.log('Product 관련 함수 시작');
   await DoItProductThings();
   console.log('Product 관련 함수 종료');

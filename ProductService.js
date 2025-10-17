@@ -27,11 +27,11 @@ export async function getProductList(page = 1, pageSize = 10, keyword = '') {
 export async function PostProduct(productData) {
   try {
     const Data = {
-      name: productData.name,
-      description: productData.description,
-      price: productData.price,
-      tags: productData.tags,
-      images: productData.images,
+      name: productData._name,
+      description: productData._description,
+      price: productData._price,
+      tags: productData._tags,
+      images: productData._images,
     };
 
     const res = await API_URL.post('/', Data);
@@ -76,11 +76,11 @@ export async function getProduct(id) {
 
 export async function patchProduct(id, updateData = {}) {
   const newData = {
-    name: updateData.name,
-    description: updateData.description,
-    price: updateData.price,
-    tags: updateData.tags,
-    images: updateData.images,
+    name: updateData._name,
+    description: updateData._description,
+    price: updateData._price,
+    tags: updateData._tags,
+    images: updateData._images,
   };
   console.log('====patchProduct====');
   try {
