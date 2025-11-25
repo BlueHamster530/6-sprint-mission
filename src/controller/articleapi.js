@@ -1,12 +1,11 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '../libs/constants.js';
 import { assert } from 'superstruct';
-import { CreateProduct, PatchProduct } from '../libs/structs.js';
+import { CreateArticle, PatchArticle } from '../libs/structs.js';
 
 
-const prisma = new PrismaClient();
 
-export async function GetProduct(req, res) {
-    const { offset = 0, limit = 0, order = 'newset', name = "", description = "" } = req.query;
+export async function GetArticle(req, res) {
+    const { offset = 0, limit = 0, order = 'newset', title = "", content = "" } = req.query;
     let orderBy;
     switch (order) {
         case 'oldest':
@@ -24,11 +23,11 @@ export async function GetProduct(req, res) {
 
     const findOptions = {
         where: {
-            name: {
-                contains: name,
+            title: {
+                contains: title,
             },
-            description: {
-                contains: description,
+            content: {
+                contains: content,
             },
         },
         orderBy,
@@ -39,37 +38,37 @@ export async function GetProduct(req, res) {
         findOptions.take = parsedLimit;
     }
 
-    const product = await prisma.product.findMany(findOptions);
-    res.send(product);
+    const article = await PrismaClient.article.findMany(findOptions);
+    res.send(article);
 }
 
 
-export async function GetProductById(req, res) {
+export async function GetArticleById(req, res) {
     const { id } = req.params;
-    const product = await prisma.product.findUniqueOrThrow({
+    const article = await PrismaClient.article.findUniqueOrThrow({
         where: {
             id
         },
     });
-    res.send(product);
+    res.send(article);
 }
 
-export async function PostProduct(req, res) {
-    assert(req.body, CreateProduct);
+export async function PostArticle(req, res) {
+    assert(req.body, CreateArticle);
     const { ...userFields } = req.body;
-    const product = await prisma.product.create({
+    const article = await PrismaClient.article.create({
         data: {
             ...userFields
         },
     });
-    res.status(201).send(product);
+    res.status(201).send(article);
 }
 
-export async function PatchProductById(req, res) {
+export async function PatchArticleById(req, res) {
     const { id } = req.params;
-    assert(req.body, PatchProduct);
+    assert(req.body, PatchArticle);
     const { ...userFields } = req.body;
-    const Product = await prisma.product.update({
+    const article = await PrismaClient.article.update({
         where: {
             id
         },
@@ -77,15 +76,17 @@ export async function PatchProductById(req, res) {
             ...userFields
         },
     });
-    res.send(Product);
+    res.send(article);
 }
 
-export async function DeleteProductById(req, res) {
+export async function DeleteArticleById(req, res) {
     const { id } = req.params;
-    const Product = await prisma.product.delete({
+    const article = await PrismaClient.article.delete({
         where: {
             id
         },
     });
-    res.send(Product);
+    res.send(article);
 }
+
+

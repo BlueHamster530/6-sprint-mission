@@ -4,6 +4,7 @@ import productRouter from './Routers/productRouter.js';
 import articleRouter from './Routers/articleRouter.js';
 import commentRouter from './Routers/commentRouter.js';
 import uploadRouter from './Routers/uploadRouter.js';
+import errorHandler from './libs/Handler/errorHandler.js';
 import cors from 'cors';
 
 
@@ -16,6 +17,9 @@ app.use('/products', productRouter);
 app.use('/articles', articleRouter);
 app.use('/comments', commentRouter);
 app.use('/files', uploadRouter);
+
+
+app.use(errorHandler);
 
 app.listen(PORT, () => {
     console.log(`Server is running`);
