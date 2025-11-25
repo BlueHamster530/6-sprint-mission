@@ -1,15 +1,16 @@
 import express from 'express';
+import catchAsync from './../libs/catchAsync.js';
 import multer from 'multer';
 import {
     UploadSingleImage
-} from '../apis/uploadapi.js';
+} from '../controller/uploadapi.js';
 
 const uploadRouter = express.Router();
 
 const upload = multer({ dest: 'upload/' });
 
 uploadRouter.post('/', upload.single('attachment'),
-    UploadSingleImage);
+    catchAsync(UploadSingleImage));
 
 uploadRouter.use('/', express.static('upload'));
 
