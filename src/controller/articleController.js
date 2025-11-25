@@ -1,4 +1,4 @@
-import { PrismaClient } from '../libs/constants.js';
+import { prismaClient } from '../libs/constants.js';
 import { assert } from 'superstruct';
 import { CreateArticle, PatchArticle } from '../libs/structs.js';
 
@@ -38,14 +38,14 @@ export async function GetArticle(req, res) {
         findOptions.take = parsedLimit;
     }
 
-    const article = await PrismaClient.article.findMany(findOptions);
+    const article = await prismaClient.article.findMany(findOptions);
     res.send(article);
 }
 
 
 export async function GetArticleById(req, res) {
     const { id } = req.params;
-    const article = await PrismaClient.article.findUniqueOrThrow({
+    const article = await prismaClient.article.findUniqueOrThrow({
         where: {
             id
         },
@@ -56,7 +56,7 @@ export async function GetArticleById(req, res) {
 export async function PostArticle(req, res) {
     assert(req.body, CreateArticle);
     const { ...userFields } = req.body;
-    const article = await PrismaClient.article.create({
+    const article = await prismaClient.article.create({
         data: {
             ...userFields
         },
@@ -68,7 +68,7 @@ export async function PatchArticleById(req, res) {
     const { id } = req.params;
     assert(req.body, PatchArticle);
     const { ...userFields } = req.body;
-    const article = await PrismaClient.article.update({
+    const article = await prismaClient.article.update({
         where: {
             id
         },
@@ -81,7 +81,7 @@ export async function PatchArticleById(req, res) {
 
 export async function DeleteArticleById(req, res) {
     const { id } = req.params;
-    const article = await PrismaClient.article.delete({
+    const article = await prismaClient.article.delete({
         where: {
             id
         },

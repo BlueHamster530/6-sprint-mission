@@ -1,22 +1,15 @@
-import express from 'express';
-import { PORT } from './libs/constants.js';
-import productRouter from './Routers/productRouter.js';
-import articleRouter from './Routers/articleRouter.js';
-import commentRouter from './Routers/commentRouter.js';
-import uploadRouter from './Routers/uploadRouter.js';
-import errorHandler from './libs/Handler/errorHandler.js';
+import { PORT, EXPRESS } from './libs/constants.js';
 import cors from 'cors';
+import { RouterManager } from './Routers/routerManager.js';
+import errorHandler from './libs/Handler/errorHandler.js';
 
 
-const app = express();
+const app = EXPRESS();
 app.use(cors());
-app.use(express.json());
+app.use(EXPRESS.json());
 
+app.use('/', RouterManager);
 
-app.use('/products', productRouter);
-app.use('/articles', articleRouter);
-app.use('/comments', commentRouter);
-app.use('/files', uploadRouter);
 
 
 app.use(errorHandler);

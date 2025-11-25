@@ -1,4 +1,4 @@
-import express from 'express';
+import { EXPRESS } from './libs/constants.js';
 import catchAsync from './../libs/catchAsync.js';
 import {
     GetComment,
@@ -6,9 +6,9 @@ import {
     GetCommentById,
     PatchCommentById,
     DeleteCommentById
-} from '../controller/commentapi.js';
+} from '../controller/commentController.js';
 
-const commentRouter = express.Router();
+const commentRouter = EXPRESS.Router();
 
 commentRouter.route('/')
     .get(catchAsync(GetComment))

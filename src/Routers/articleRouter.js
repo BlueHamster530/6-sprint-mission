@@ -1,4 +1,4 @@
-import express from 'express';
+import { EXPRESS } from './libs/constants.js';
 import catchAsync from './../libs/catchAsync.js';
 import {
     GetArticle,
@@ -6,9 +6,9 @@ import {
     GetArticleById,
     PatchArticleById,
     DeleteArticleById
-} from '../controller/articleapi.js';
+} from '../controller/articleController.js';
 
-const articleRouter = express.Router();
+const articleRouter = EXPRESS.Router();
 
 
 
