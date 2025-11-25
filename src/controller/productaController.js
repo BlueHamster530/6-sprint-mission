@@ -1,4 +1,4 @@
-import { PrismaClient } from '../libs/constants.js';
+import { prismaClient } from '../libs/constants.js';
 import { assert } from 'superstruct';
 import { CreateProduct, PatchProduct } from '../libs/structs.js';
 
@@ -37,7 +37,7 @@ export async function GetProduct(req, res, next) {
             findOptions.take = parsedLimit;
         }
 
-        const product = await PrismaClient.product.findMany(findOptions);
+        const product = await prismaClient.product.findMany(findOptions);
         res.send(product);
     }
     catch { next(); }
@@ -47,7 +47,7 @@ export async function GetProduct(req, res, next) {
 export async function GetProductById(req, res, next) {
     try {
         const { id } = req.params;
-        const product = await PrismaClient.product.findUniqueOrThrow({
+        const product = await prismaClient.product.findUniqueOrThrow({
             where: {
                 id
             },
@@ -61,7 +61,7 @@ export async function PostProduct(req, res, next) {
     try {
         assert(req.body, CreateProduct);
         const { ...userFields } = req.body;
-        const product = await PrismaClient.product.create({
+        const product = await prismaClient.product.create({
             data: {
                 ...userFields
             },
@@ -76,7 +76,7 @@ export async function PatchProductById(req, res, next) {
         const { id } = req.params;
         assert(req.body, PatchProduct);
         const { ...userFields } = req.body;
-        const Product = await PrismaClient.product.update({
+        const Product = await prismaClient.product.update({
             where: {
                 id
             },
@@ -92,7 +92,7 @@ export async function PatchProductById(req, res, next) {
 export async function DeleteProductById(req, res, next) {
     try {
         const { id } = req.params;
-        const Product = await PrismaClient.product.delete({
+        const Product = await prismaClient.product.delete({
             where: {
                 id
             },

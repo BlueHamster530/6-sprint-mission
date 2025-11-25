@@ -1,4 +1,4 @@
-import express from 'express';
+import { EXPRESS } from './libs/constants.js';
 import catchAsync from './../libs/catchAsync.js';
 import {
     GetProduct,
@@ -6,9 +6,9 @@ import {
     GetProductById,
     PatchProductById,
     DeleteProductById
-} from '../controller/productapi.js';
+} from '../controller/productaController.js';
 
-const productRouter = express.Router();
+const productRouter = EXPRESS.Router();
 
 
 
