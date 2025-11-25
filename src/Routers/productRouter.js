@@ -1,38 +1,24 @@
 import express from 'express';
-import { Prisma } from '@prisma/client';
+import catchAsync from './../libs/catchAsync.js';
 import {
     GetProduct,
     PostProduct,
     GetProductById,
     PatchProductById,
     DeleteProductById
-} from '../apis/productapi.js';
+} from '../controller/productapi.js';
 
 const productRouter = express.Router();
 
 
 
 productRouter.route('/')
-    .get(GetProduct)
-    .post(PostProduct);
+    .get(catchAsync(GetProduct))
+    .post(catchAsync(PostProduct));
 
 productRouter.route('/:id')
-    .get(GetProductById)
-    .patch(PatchProductById)
-    .delete(DeleteProductById);
-
-
-productRouter.use((err, req, res, next) => {
-    console.error(err.name);
-    if (err instanceof Prisma.PrismaClientKnownRequestError && err.code == "P2025") {
-        res.sendStatus(404);
-    } else if (err instanceof Prisma.PrismaClientKnownRequestError && err.code == "P2002") {
-        res.status(400).send({ message: err.message });
-    } else if (err.name == "StructError") {
-        res.status(400).send({ message: err.message });
-    } else {
-        res.status(500).send({ message: err.message });
-    }
-});
+    .get(catchAsync(GetProductById))
+    .patch(catchAsync(PatchProductById))
+    .delete(catchAsync(DeleteProductById));
 
 export default productRouter;
