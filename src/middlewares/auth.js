@@ -7,7 +7,11 @@ const verifyAccessToken = expressjwt({
     algorithms: ["HS256"],
     requestProperty: 'user'
 });
-
+const verifyRefreshToken = expressjwt({
+    secret: process.env.JWT_SECRET,
+    algorithms: ['HS256'],
+    getToken: (req) => req.cookies.refreshToken,
+});
 async function verifyProduectAuth(req, res, next) {
     const id = Number(req.params.id);
 
@@ -28,4 +32,5 @@ async function verifyProduectAuth(req, res, next) {
 export default {
     verifyAccessToken,
     verifyProduectAuth,
+    verifyRefreshToken,
 };

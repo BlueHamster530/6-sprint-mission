@@ -20,7 +20,7 @@ class UserService {
     }
 
     filterSensitivceUserData(user) {
-        const { password, ...rest } = user;
+        const { password, refreshToken, ...rest } = user;
         return rest;
     }
 
@@ -31,16 +31,29 @@ class UserService {
         await this.verifyPassword(password, user.password);
         return this.filterSensitivceUserData(user);
     }
-
+    async updateUser(id, data) {
+        return await userRepository.update(id, data);
+    }
     async verifyPassword(inputPassword, savedPassword) {
         const isValid = await bcrypt.compare(inputPassword, savedPassword);
         if (!isValid) throw new CustomError(401, 'Unauthorized');
 
     }
-    createToken(user) {
+    createToken(user, type) {
         const payload = { userId: user.id };
-        const options = { expiresIn: '1h' };
+        const options = {
+            expiresIn: type === 'refresh' ? '1d' : '10m',
+        };
         return jwt.sign(payload, process.env.JWT_SECRET, options);
+    }
+    async refreshToken(userId, refreshToken) {
+        const user = await userRepository.findById(userId);
+        if (!user || user.refreshToken !== refreshToken) {
+            throw new CustomError(401, 'Unauthorized');
+        }
+        const accessToken = createToken(user); // 변경
+        const newRefreshToken = createToken(user, 'refresh'); // 추가
+        return { accessToken, newRefreshToken }; // 변경
     }
 }
 
