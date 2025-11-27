@@ -1,5 +1,6 @@
 import { EXPRESS } from './../libs/constants.js';
-import catchAsync from './../libs/catchAsync.js';
+import { catchAsync, catchAsyncAll } from './../libs/catchAsync.js';
+import auth from './../middlewares/auth.js';
 import {
     GetProduct,
     PostProduct,
@@ -14,11 +15,11 @@ const productRouter = EXPRESS.Router();
 
 productRouter.route('/')
     .get(catchAsync(GetProduct))
-    .post(catchAsync(PostProduct));
+    .post(auth.verifyAccessToken, catchAsync(PostProduct));
 
 productRouter.route('/:id')
     .get(catchAsync(GetProductById))
-    .patch(catchAsync(PatchProductById))
-    .delete(catchAsync(DeleteProductById));
+    .patch(auth.verifyAccessToken, catchAsyncAll(auth.verifyProduectAuth, PatchProductById))
+    .delete(auth.verifyAccessToken, catchAsyncAll(auth.verifyProduectAuth, DeleteProductById));
 
 export default productRouter;

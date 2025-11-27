@@ -1,5 +1,4 @@
-const catchAsync = (fn) => (req, res, next) => {
+export const catchAsync = (fn) => (req, res, next) => {
     Promise.resolve(fn(req, res, next)).catch(next);
 };
-
-export default catchAsync;
+export const catchAsyncAll = (...fns) => fns.map(catchAsync);
