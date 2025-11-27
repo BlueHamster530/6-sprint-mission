@@ -6,7 +6,7 @@ import {
     GetProductById,
     PatchProductById,
     DeleteProductById
-} from '../controller/productaController.js';
+} from '../controller/productController.js';
 
 const productRouter = EXPRESS.Router();
 

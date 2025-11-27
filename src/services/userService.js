@@ -1,6 +1,7 @@
 import { CustomError } from '../libs/Handler/errorHandler.js';
 import userRepository from '../repositories/userRepository.js';
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
 async function hashingPassword(password) { // 함수 추가
     return bcrypt.hash(password, 12);
@@ -35,6 +36,11 @@ class UserService {
         const isValid = await bcrypt.compare(inputPassword, savedPassword);
         if (!isValid) throw new CustomError(401, 'Unauthorized');
 
+    }
+    createToken(user) {
+        const payload = { userId: user.id };
+        const options = { expiresIn: '1h' };
+        return jwt.sign(payload, process.env.JWT_SECRET, options);
     }
 }
 
