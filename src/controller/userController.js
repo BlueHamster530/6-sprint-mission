@@ -13,7 +13,8 @@ export async function login(req, res, next) {
     try {
         const { email, password } = req.body;
         const user = await userService.getUser(email, password);
-        return res.status(200).json(user);
+        const accessToken = userService.createToken(user);
+        return res.status(200).json({ accessToken });
     }
     catch (err) { next(err); }
 }    
