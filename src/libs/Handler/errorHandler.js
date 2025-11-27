@@ -1,7 +1,6 @@
 import multer from 'multer';
 
 const errorHandler = (err, req, res, next) => {
-    console.error(`Error: ${err}`);
     if (err.name === 'PrismaCluentInitializationError')
         return res.status(500).json({
             success: false,
@@ -33,7 +32,7 @@ const errorHandler = (err, req, res, next) => {
             });
         }
     }
-    const statusCode = err.statusCode || 500;
+    const statusCode = err.statusCode || err.status || 500;
     const message = err.message || '서버 오류가 발생했습니다.';
     const path = err.path || null;
     const response = {

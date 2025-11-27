@@ -1,5 +1,5 @@
 import { EXPRESS } from './../libs/constants.js';
-import catchAsync from './../libs/catchAsync.js';
+import { catchAsync } from './../libs/catchAsync.js';
 import multer from 'multer';
 import {
     UploadSingleImage
