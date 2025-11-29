@@ -1,25 +1,20 @@
 import { EXPRESS } from './../libs/constants.js';
-import { catchAsync, catchAsyncAll } from './../libs/catchAsync.js';
+import { catchAsync } from './../libs/catchAsync.js';
 import auth from './../middlewares/auth.js';
-import {
-    GetProduct,
-    PostProduct,
-    GetProductById,
-    PatchProductById,
-    DeleteProductById
-} from '../controller/productController.js';
+import ProductController from '../controller/productController.js';
 
 const productRouter = EXPRESS.Router();
-
-
+const productController = new ProductController();
 
 productRouter.route('/')
-    .get(catchAsync(GetProduct))
-    .post(auth.verifyAccessToken, catchAsync(PostProduct));
+    .get(auth.softVerifyAccessToken, catchAsync(productController.GetProduct))
+    .post(auth.verifyAccessToken, catchAsync(productController.PostProduct));
 
 productRouter.route('/:id')
-    .get(catchAsync(GetProductById))
-    .patch(auth.verifyAccessToken, catchAsyncAll(auth.verifyProduectAuth, PatchProductById))
-    .delete(auth.verifyAccessToken, catchAsyncAll(auth.verifyProduectAuth, DeleteProductById));
+    .get(auth.softVerifyAccessToken, catchAsync(productController.GetProductById))
+    .patch(auth.verifyAccessToken, catchAsync(productController.PatchProductById))
+    .delete(auth.verifyAccessToken, catchAsync(productController.DeleteProductById));
+
+productRouter.post('/:id/like', auth.verifyAccessToken, catchAsync(productController.likeProduct));
 
 export default productRouter;

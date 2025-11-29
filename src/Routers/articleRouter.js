@@ -1,26 +1,20 @@
 import { EXPRESS } from './../libs/constants.js';
-import { catchAsync, catchAsyncAll } from './../libs/catchAsync.js';
+import { catchAsync } from './../libs/catchAsync.js';
 import auth from './../middlewares/auth.js';
-import {
-    GetArticle,
-    PostArticle,
-    GetArticleById,
-    PatchArticleById,
-    DeleteArticleById
-} from '../controller/articleController.js';
+import ArticleController from '../controller/articleController.js';
 
 const articleRouter = EXPRESS.Router();
-
-
+const articleController = new ArticleController();
 
 articleRouter.route('/')
-    .get(catchAsync(GetArticle))
-    .post(auth.verifyAccessToken, catchAsync(PostArticle));
+    .get(auth.softVerifyAccessToken, catchAsync(articleController.getArticles))
+    .post(auth.verifyAccessToken, catchAsync(articleController.postArticle));
 
 articleRouter.route('/:id')
-    .get(catchAsync(GetArticleById))
-    .patch(auth.verifyAccessToken, catchAsyncAll(auth.verifyProduectAuth, PatchArticleById))
-    .delete(auth.verifyAccessToken, catchAsyncAll(auth.verifyProduectAuth, DeleteArticleById));
+    .get(auth.softVerifyAccessToken, catchAsync(articleController.getArticleById))
+    .patch(auth.verifyAccessToken, auth.verifyArticleAuth, catchAsync(articleController.patchArticleById))
+    .delete(auth.verifyAccessToken, auth.verifyArticleAuth, catchAsync(articleController.deleteArticleById));
 
+articleRouter.post('/:id/like', auth.verifyAccessToken, catchAsync(articleController.likeArticle));
 
 export default articleRouter;
