@@ -1,6 +1,6 @@
 import { prismaClient } from '../libs/constants.js';
 import { assert } from 'superstruct';
-import { CreateComment, PatchComment } from '../libs/structs.js';
+import { CreateComment, PatchComment } from '../structs/structs.js';
 
 
 

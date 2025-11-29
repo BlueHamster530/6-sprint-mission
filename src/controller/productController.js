@@ -1,81 +1,79 @@
-import { prismaClient } from '../libs/constants.js';
+import { productService } from '../services/productService.js';
 import { assert } from 'superstruct';
-import { CreateProduct, PatchProduct } from '../libs/structs.js';
+import { CreateProduct, PatchProduct } from '../structs/structs.js';
 import productRepository from '../repositories/productRepository.js';
-export async function GetProduct(req, res) {
-    const { offset = 0, limit = 0, order = 'newset', name = "", description = "" } = req.query;
-    let orderBy;
-    switch (order) {
-        case 'oldest':
-            orderBy = { createdAt: 'asc' };
-            break;
-        case 'newest':
-            orderBy = { createdAt: 'desc' };
-            break;
-        default:
-            orderBy = { createdAt: 'desc' };
-    }
-    // parse offset/limit and only include `take` when a positive integer is provided
-    const parsedOffset = Number.isNaN(parseInt(offset)) ? 0 : parseInt(offset);
-    const parsedLimit = parseInt(limit);
 
-    const findOptions = {
-        where: {
-            name: {
-                contains: name,
+export default class ProductController {
+    async GetProduct(req, res) {
+        const { offset = 0, limit = 0, order = 'newset', name = "", description = "" } = req.query;
+        let orderBy;
+        switch (order) {
+            case 'oldest':
+                orderBy = { createdAt: 'asc' };
+                break;
+            case 'newest':
+                orderBy = { createdAt: 'desc' };
+                break;
+            default:
+                orderBy = { createdAt: 'desc' };
+        }
+        const parsedOffset = Number.isNaN(parseInt(offset)) ? 0 : parseInt(offset);
+        const parsedLimit = parseInt(limit);
+
+        const findOptions = {
+            where: {
+                name: {
+                    contains: name,
+                },
+                description: {
+                    contains: description,
+                },
             },
-            description: {
-                contains: description,
-            },
-        },
-        orderBy,
-        skip: parsedOffset,
-    };
+            orderBy,
+            skip: parsedOffset,
+        };
 
-    if (!Number.isNaN(parsedLimit) && parsedLimit > 0) {
-        findOptions.take = parsedLimit;
+        if (!Number.isNaN(parsedLimit) && parsedLimit > 0) {
+            findOptions.take = parsedLimit;
+        }
+
+        const userId = req.user ? req.user.userId : null;
+        const products = await productService.getProducts(findOptions, userId);
+        res.send(products);
     }
 
-    const product = await prismaClient.product.findMany(findOptions);
-    res.send(product);
-}
-
-
-export async function GetProductById(req, res) {
-    const id = Number(req.params.id);
-
-    if (isNaN(id)) {
-        throw new CustomError(400, 'ID는 숫자여야 합니다.');
+    async GetProductById(req, res) {
+        const id = req.params.id;
+        const userId = req.user ? req.user.userId : null;
+        const product = await productService.getProductById(id, userId);
+        res.send(product);
     }
-    const product = await productRepository.findById(id);
-    res.send(product);
-}
 
-export async function PostProduct(req, res) {
-    assert(req.body, CreateProduct);
-    const { ...userFields } = req.body;
-    const product = await productRepository.create(userFields);
-    res.status(201).send(product);
-}
-
-export async function PatchProductById(req, res) {
-    const id = Number(req.params.id);
-
-    if (isNaN(id)) {
-        throw new CustomError(400, 'ID는 숫자여야 합니다.');
+    async PostProduct(req, res) {
+        assert(req.body, CreateProduct);
+        const { ...userFields } = req.body;
+        const product = await productRepository.create(userFields);
+        res.status(201).send(product);
     }
-    assert(req.body, PatchProduct);
-    const { ...userFields } = req.body;
-    const Product = await productRepository.update(id, userFields);
-    res.send(Product);
-}
 
-export async function DeleteProductById(req, res) {
-    const id = Number(req.params.id);
-
-    if (isNaN(id)) {
-        throw new CustomError(400, 'ID는 숫자여야 합니다.');
+    async PatchProductById(req, res) {
+        const id = req.params.id;
+        assert(req.body, PatchProduct);
+        const { ...userFields } = req.body;
+        const Product = await productRepository.update(id, userFields);
+        res.send(Product);
     }
-    const Product = await productRepository.ondelete(id);
-    res.send(Product);
+
+    async DeleteProductById(req, res) {
+        const id = req.params.id;
+        const Product = await productRepository.ondelete(id);
+        res.send(Product);
+    }
+
+    async likeProduct(req, res) {
+        const userId = req.user.userId;
+        const productId = req.params.id;
+        const result = await productService.likeProduct(userId, productId);
+        return res.status(200).json(result);
+    }
 }
