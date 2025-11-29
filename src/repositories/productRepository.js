@@ -1,18 +1,32 @@
 import { prismaClient } from '../libs/constants.js';
 
-async function findByAuthorId(authorId) {
+async function findByUserId(userId) {
     return prismaClient.product.findMany({
         where: {
-            authorId,
+            id: userId,
         },
     });
 }
 
-async function findById(id) {
+async function findById(id, userId) {
+    const include = {
+        productLikes: userId ? { where: { userId } } : false,
+    };
     return prismaClient.product.findUniqueOrThrow({
         where: {
             id,
         },
+        include,
+    });
+}
+
+async function findAll(findOptions, userId) {
+    const include = {
+        productLikes: userId ? { where: { userId } } : false,
+    };
+    return prismaClient.product.findMany({
+        ...findOptions,
+        include,
     });
 }
 
@@ -45,8 +59,9 @@ async function ondelete(id) {
 
 export default {
     findById,
+    findAll,
     update,
     create,
     ondelete,
-    findByAuthorId,
+    findByUserId,
 };

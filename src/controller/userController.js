@@ -37,4 +37,27 @@ export default class UserServiceController {
         const user = await userService.getUserById(userId);
         return res.status(200).json(user);
     }
+    async updateMe(req, res) {
+        const userId = req.user.userId;
+        const updatedUser = await userService.updateProfile(userId, req.body);
+        return res.status(200).json(updatedUser);
+    }
+
+    async updateMyPassword(req, res) {
+        const userId = req.user.userId;
+        const updatedUser = await userService.updatePassword(userId, req.body);
+        return res.status(200).json(updatedUser);
+    }
+
+    async getMyProducts(req, res) {
+        const userId = req.user.userId;
+        const products = await userService.getProductsByUserId(userId);
+        return res.status(200).json(products);
+    }
+
+    async getMyLikedProducts(req, res) {
+        const userId = req.user.userId;
+        const products = await userService.getLikedProductsByUserId(userId);
+        return res.status(200).json(products);
+    }
 }

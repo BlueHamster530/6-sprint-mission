@@ -1,8 +1,11 @@
+import { assert } from 'superstruct';
 import { CustomError } from '../libs/Handler/errorHandler.js';
 import userRepository from '../repositories/userRepository.js';
 import productRepository from '../repositories/productRepository.js';
+import productLikeRepository from '../repositories/productLikeRepository.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import { PatchUser, ChangePassword } from '../structs/userStructs.js';
 
 async function hashingPassword(password) {
     // 함수 추가
@@ -47,6 +50,36 @@ class UserService {
         return this.filterSensitivceUserData(user);
     }
 
+    async updateProfile(id, data) {
+        assert(data, PatchUser);
+        const user = await userRepository.update(id, data);
+        return this.filterSensitivceUserData(user);
+    }
+
+    async updatePassword(id, data) {
+        assert(data, ChangePassword);
+        const { currentPassword, newPassword, confirmNewPassword } = data;
+        if (newPassword !== confirmNewPassword) {
+            throw new CustomError(400, "Passwords don't match");
+        }
+        const user = await userRepository.findById(id);
+        await this.verifyPassword(currentPassword, user.password);
+
+        const hashedPassword = await hashingPassword(newPassword);
+        const updatedUser = await userRepository.update(id, { password: hashedPassword });
+        return this.filterSensitivceUserData(updatedUser);
+    }
+
+    async getProductsByUserId(id) {
+        const products = await productRepository.findByUserId(id);
+        return products;
+    }
+
+    async getLikedProductsByUserId(id) {
+        const products = await productLikeRepository.findLikedProductsByUserId(id);
+        return products;
+    }
+
 
     async updateUser(id, data) {
         return await userRepository.update(id, data);
@@ -67,8 +100,8 @@ class UserService {
         if (!user || user.refreshToken !== refreshToken) {
             throw new CustomError(401, 'Unauthorized');
         }
-        const accessToken = createToken(user); // 변경
-        const newRefreshToken = createToken(user, 'refresh'); // 추가
+        const accessToken = this.createToken(user); // 변경
+        const newRefreshToken = this.createToken(user, 'refresh'); // 추가
         return { accessToken, newRefreshToken }; // 변경
     }
 }
