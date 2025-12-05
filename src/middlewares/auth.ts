@@ -1,8 +1,10 @@
 import { expressjwt } from 'express-jwt';
-import productRepository from '../repositories/productRepository.js';
-import articleRepository from '../repositories/articleRepository.js';
-import { CustomError } from '../libs/Handler/errorHandler.js';
+import productRepository from '../repositories/productRepository';
+import articleRepository from '../repositories/articleRepository';
+import { CustomError } from '../libs/Handler/errorHandler';
+import { ExpressHandler, ExpressRequest, ExpressResponse, ExpressNextFunction } from '../libs/constants';
 import jwt from 'jsonwebtoken';
+
 
 const JWT_SECRET = process.env.JWT_SECRET;
 if (!JWT_SECRET) {
@@ -15,11 +17,11 @@ const verifyAccessToken = expressjwt({
     requestProperty: 'user'
 });
 
-const softVerifyAccessToken = (req, res, next) => {
+const softVerifyAccessToken: ExpressHandler = (req, res, next) => {
     const token = req.headers.authorization?.split(' ')[1];
     if (token) {
         jwt.verify(token, JWT_SECRET, (err, user) => {
-            if (!err) {
+            if (!err && user) {
                 req.user = user;
             }
             next();
@@ -34,27 +36,31 @@ const verifyRefreshToken = expressjwt({
     algorithms: ['HS256'],
     getToken: (req) => req.cookies.refreshToken,
 });
-async function verifyProduectAuth(req, res, next) {
-    const id = req.params.id;
-
-    const product = await productRepository.findById(id);
+async function verifyProduectAuth
+    (req: ExpressRequest, res: ExpressResponse, next: ExpressNextFunction) {
+    const id = req.params.id || "";
+    if (!id) throw new CustomError(404, "id가 비 정상적인 값 입니다");
+    const idtoNumber = parseInt(id);
+    const product = await productRepository.findById(idtoNumber);
     if (!product) {
         throw new CustomError(404, 'product not found');
     }
-    if (product.authorId !== req.user.id) {
+    if (typeof req.user !== 'object' || req.user.id === undefined || product.id !== req.user.id) {
         throw new CustomError(403, 'Forbidden');
     }
     return next();
 };
 
-async function verifyArticleAuth(req, res, next) {
-    const id = req.params.id;
+async function verifyArticleAuth(req: ExpressRequest, res: ExpressResponse, next: ExpressNextFunction) {
 
-    const article = await articleRepository.findById(id);
+    const id = req.params.id;
+    if (!id) throw new CustomError(404, "id가 비 정상적인 값 입니다");
+    const idtoNumber = parseInt(id);
+    const article = await articleRepository.findById(idtoNumber);
     if (!article) {
         throw new CustomError(404, 'article not found');
     }
-    if (article.authorId !== req.user.id) {
+    if (typeof req.user !== 'object' || req.user.id === undefined || article.id !== req.user.id) {
         throw new CustomError(403, 'Forbidden');
     }
     return next();

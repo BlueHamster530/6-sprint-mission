@@ -1,7 +1,7 @@
-import { prismaClient } from '../libs/constants.js';
-import { ArticleType, ArticleFindOptions } from '../libs/interfaces.js';
+import { prismaClient } from '../libs/constants';
+import { ArticleType, ArticleFindOptions } from '../libs/interfaces';
 
-async function findById(id: number, userId: number) {
+async function findById(id: number, userId?: number) {
     const include = {
         articleLikes: userId ? { where: { userId } } : false,
     };

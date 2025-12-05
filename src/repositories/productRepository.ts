@@ -10,7 +10,7 @@ async function findByUserId(userId: number) {
     });
 }
 
-async function findById(id: number, userId: number) {
+async function findById(id: number, userId?: number) {
     const include = {
         productLikes: userId ? { where: { userId } } : false,
     };
@@ -33,7 +33,6 @@ async function findAll(findOptions: ProductFindOptions, userId: number) {
 }
 
 async function update(id: number, data: ProductType) {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { id: _, createdAt, updatedAt, comments, productLikes, ...updateData } = data;
     return prismaClient.product.update({
         where: {
@@ -66,5 +65,5 @@ export default {
     update,
     create,
     ondelete,
-    findByUserId,
+    findByUserId
 };
