@@ -1,4 +1,4 @@
-import { prismaClient } from '../libs/constants.js';
+import { prismaClient } from '../libs/constants';
 
 async function find(userId: number, productId: number) {
     return prismaClient.productLike.findUnique({
