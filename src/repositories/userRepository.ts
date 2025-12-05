@@ -40,14 +40,6 @@ async function update(id: number, data: Partial<UserType>) {
     });
 }
 
-// async function createOrUpdate(provider: string, providerId: string, email: string, name: string) {
-//     return prismaClient.user.upsert({
-//         where: { provider, providerId },
-//         update: { email, name },
-//         create: { provider, providerId, email, name },
-//     });
-// }
-
 export default {
     findById,
     findByEmail,
