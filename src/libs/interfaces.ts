@@ -1,4 +1,5 @@
-import { Prisma } from '@prisma/client';
+
+import { Prisma } from './../libs/constants';
 
 export interface ProductType {
     id: number;
@@ -16,8 +17,8 @@ export interface ArticleType {
     title: string;
     content: string;
     createdAt: Date;
-    comments: CommentType[];
-    articleLikes: ArticleLikeType[];
+    comments?: CommentType[];
+    articleLikes?: ArticleLikeType[];
 }
 export interface CommentType {
     id: number;
@@ -75,6 +76,29 @@ export interface ProductWithLikes extends ProductType {
     productLikes: ProductLikeType[];
 }
 
+
+
 export interface ProductWithIsLiked extends ProductType {
+
+    isLiked: boolean;
+
+}
+
+export interface ArticleWithLikes extends ArticleType {
+    articleLikes: ArticleLikeType[];
+}
+
+export interface ArticleWithIsLiked extends ArticleType {
     isLiked: boolean;
 }
+
+export type UserPublicData = Omit<UserType, 'password' | 'refreshToken'>;
+
+export type ProductPublicData = Omit<ProductType, 'id' | 'createdAt' | 'updatedAt'>;
+
+export type UpdateProductData = Partial<ProductPublicData>;
+
+
+export type ArticlePublicData = Omit<ArticleType, 'id' | 'createdAt' | 'updatedAt'>;
+
+export type UpdateArticleData = Partial<ArticlePublicData>;
