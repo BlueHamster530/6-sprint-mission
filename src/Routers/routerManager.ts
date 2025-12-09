@@ -1,9 +1,9 @@
-import { EXPRESS } from '../libs/constants.js';
-import productRouter from './productRouter.js';
-import articleRouter from './articleRouter.js';
-import commentRouter from './commentRouter.js';
-import uploadRouter from './uploadRouter.js';
-import userRouter from './userRouter.js';
+import { EXPRESS } from '../libs/constants';
+import productRouter from './productRouter';
+import articleRouter from './articleRouter';
+import commentRouter from './commentRouter';
+import uploadRouter from './uploadRouter';
+import userRouter from './userRouter';
 
 
 export const RouterManager = EXPRESS.Router();

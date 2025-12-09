@@ -6,7 +6,7 @@ import productLikeRepository from '../repositories/productLikeRepository';
 import bcrypt from 'bcrypt';
 import jwt, { JwtPayload, SignOptions } from 'jsonwebtoken';
 import { PatchUser, ChangePassword } from '../structs/userStructs';
-import { UserType, UpdateUserPasswordType } from "./../libs/interfaces";
+import { UserType, UpdateUserPasswordType, UserPublicData } from "./../libs/interfaces";
 
 
 async function hashingPassword(password: string) {
@@ -15,7 +15,7 @@ async function hashingPassword(password: string) {
 }
 
 class UserService {
-    async createUser(user: UserType) {
+    async createUser(user: UserType): Promise<UserPublicData> {
         const existedUser = await userRepository.findByEmail(user.email);
         if (existedUser) {
             throw new CustomError(422, 'User already exists', {
@@ -30,12 +30,12 @@ class UserService {
         return this.filterSensitivceUserData(createdUser);
     }
 
-    filterSensitivceUserData(user: UserType) {
+    filterSensitivceUserData(user: UserType): UserPublicData {
         const { password, refreshToken, ...rest } = user;
         return rest;
     }
 
-    async getUser(email: string, password: string) {
+    async getUser(email: string, password: string): Promise<UserPublicData> {
         const user = await userRepository.findByEmail(email);
         if (!user) throw new CustomError(401, 'Unauthorized');
 
@@ -44,7 +44,7 @@ class UserService {
     }
 
 
-    async getUserById(id: number) {
+    async getUserById(id: number): Promise<UserPublicData> {
         const user = await userRepository.findById(id);
         if (!user) {
             throw new CustomError(404, 'User not found');
@@ -52,7 +52,7 @@ class UserService {
         return this.filterSensitivceUserData(user);
     }
 
-    async updateProfile(id: number, data: UserType) {
+    async updateProfile(id: number, data: Partial<UserType>): Promise<UserPublicData> {
         assert(data, PatchUser);
         const user = await userRepository.update(id, data);
         if (!user) {
@@ -61,7 +61,7 @@ class UserService {
         return this.filterSensitivceUserData(user);
     }
 
-    async updatePassword(id: number, data: UpdateUserPasswordType) {
+    async updatePassword(id: number, data: UpdateUserPasswordType): Promise<UserPublicData> {
         assert(data, ChangePassword);
         const { currentPassword, newPassword, confirmNewPassword } = data;
         if (newPassword !== confirmNewPassword) {
@@ -89,14 +89,14 @@ class UserService {
     }
 
 
-    async updateUser(id: number, data: UserType) {
+    async updateUser(id: number, data: Partial<UserType>) {
         return await userRepository.update(id, data);
     }
     async verifyPassword(inputPassword: string, savedPassword: string) {
         const isValid = await bcrypt.compare(inputPassword, savedPassword);
         if (!isValid) throw new CustomError(401, 'Unauthorized');
     }
-    createToken(user: UserType, type?: string) {
+    createToken(user: UserPublicData | UserType, type?: string) {
         const JWTsecretKey = process.env.JWT_SECRET;
         if (!JWTsecretKey) throw new CustomError(500, 'JWT_SECRET is not defined');
         const payload: JwtPayload = { userId: user.id };

@@ -1,5 +1,5 @@
 import 'dotenv/config';
-export const getCorsOrigin = () => {
+export const getCorsOrigin = (): string | string[] => {
     const corsOrigin = process.env.CORS_ORIGIN;
     if (!corsOrigin || corsOrigin === '*') return '*';
 

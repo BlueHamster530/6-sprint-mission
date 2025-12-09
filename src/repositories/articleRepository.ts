@@ -1,5 +1,9 @@
 import { prismaClient } from '../libs/constants';
-import { ArticleType, ArticleFindOptions } from '../libs/interfaces';
+import {
+    ArticlePublicData,
+    ArticleFindOptions,
+    UpdateArticleData,
+} from '../libs/interfaces';
 
 async function findById(id: number, userId?: number) {
     const include = {
@@ -24,8 +28,8 @@ async function findAll(findOptions: ArticleFindOptions, userId: number) {
     });
 }
 
-async function create(userFields: ArticleType) {
-    const { createdAt, comments, articleLikes, ...NewuserFields } = userFields;
+async function create(userFields: ArticlePublicData) {
+    const { comments, articleLikes, ...NewuserFields } = userFields;
 
     return await prismaClient.article.create({
         data: {
@@ -34,14 +38,13 @@ async function create(userFields: ArticleType) {
     });
 }
 
-async function update(id: number, data: ArticleFindOptions) {
+async function update(id: number, data: UpdateArticleData) {
+    const { comments, articleLikes, ...updateData } = data;
     return prismaClient.article.update({
         where: {
             id,
         },
-        data: {
-            ...data,
-        },
+        data: updateData,
     });
 }
 
