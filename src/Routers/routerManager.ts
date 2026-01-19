@@ -14,4 +14,4 @@ RouterManager.use('/products', productRouter);
 RouterManager.use('/articles', articleRouter);
 RouterManager.use('/comments', commentRouter);
 RouterManager.use('/files', uploadRouter);
-RouterManager.use('/user', userRouter);
+RouterManager.use('/auth', userRouter);
