@@ -42,17 +42,17 @@ export default class ProductController {
         }
 
         const userId = req.user ? req.user.userId : null;
-        if (!userId) return new CustomError(404, "UserId Not Found");
+        if (!userId) throw new CustomError(404, "UserId Not Found");
         const products = await productService.getProducts(findOptions, userId);
         res.send(products);
     };
 
     GetProductById: ExpressHandler = async (req, res) => {
         const id = req.params.id;
-        if (!id) return new CustomError(404, "id Not Found");
+        if (!id) throw new CustomError(404, "id Not Found");
         const _id = parseInt(id);
         const userId = req.user ? req.user.userId : null;
-        if (!userId) return new CustomError(404, "userId Not Found");
+        if (!userId) throw new CustomError(404, "userId Not Found");
         const product = await productService.getProductById(_id, userId);
         res.send(product);
     };
@@ -66,7 +66,7 @@ export default class ProductController {
 
     PatchProductById: ExpressHandler = async (req, res) => {
         const id = req.params.id;
-        if (!id) return new CustomError(404, "id Not Found");
+        if (!id) throw new CustomError(404, "id Not Found");
         const _id = parseInt(id);
         assert(req.body, PatchProduct);
         const userFields = removeUndefined(req.body);
@@ -76,17 +76,17 @@ export default class ProductController {
 
     DeleteProductById: ExpressHandler = async (req, res) => {
         const id = req.params.id;
-        if (!id) return new CustomError(404, "id Not Found");
+        if (!id) throw new CustomError(404, "id Not Found");
         const _id = parseInt(id);
         const Product = await productRepository.ondelete(_id);
         res.send(Product);
     };
 
     likeProduct: ExpressHandler = async (req, res) => {
-        if (!req.user) return new CustomError(404, "user Not Found");
+        if (!req.user) throw new CustomError(404, "user Not Found");
         const userId = req.user.userId;
         const productId = req.params.id;
-        if (!productId) return new CustomError(404, "productId Not Found");
+        if (!productId) throw new CustomError(404, "productId Not Found");
         const _productId = parseInt(productId);
         const result = await productService.likeProduct(userId, _productId);
         return res.status(200).json(result);
