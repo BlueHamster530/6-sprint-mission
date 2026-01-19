@@ -3,6 +3,7 @@ import cors from 'cors';
 import { RouterManager } from './Routers/routerManager';
 import { getCorsOrigin } from './libs/corsSetUp';
 import errorHandler from './libs/Handler/errorHandler';
+import { expressjwt } from 'express-jwt';
 
 const app = EXPRESS();
 
@@ -15,7 +16,7 @@ app.use(cors({
 }));
 
 
-
+app.use(EXPRESS.static('public'));
 app.use(EXPRESS.json());
 app.use(EXPRESS.urlencoded({ extended: true }));
 
