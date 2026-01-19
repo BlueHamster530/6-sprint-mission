@@ -1,7 +1,6 @@
 import { productService } from '../services/productService';
 import { assert } from 'superstruct';
 import { CreateProduct, PatchProduct } from '../structs/structs';
-import productRepository from '../repositories/productRepository';
 import { ExpressHandler } from '../libs/constants';
 import { CustomError } from '../libs/Handler/errorHandler';
 import { removeUndefined } from './../libs/removeTool';
@@ -60,7 +59,9 @@ export default class ProductController {
     PostProduct: ExpressHandler = async (req, res) => {
         assert(req.body, CreateProduct);
         const { ...userFields } = req.body;
-        const product = await productRepository.create(userFields);
+        const userId = req.user ? req.user.userId : null;
+        if (!userId) throw new CustomError(404, "userId Not Found");
+        const product = await productService.createProducts({ ...userFields, userId });
         res.status(201).send(product);
     };
 
@@ -68,9 +69,11 @@ export default class ProductController {
         const id = req.params.id;
         if (!id) throw new CustomError(404, "id Not Found");
         const _id = parseInt(id);
+        const userId = req.user ? req.user.userId : null;
+        if (!userId) throw new CustomError(404, "userId Not Found");
         assert(req.body, PatchProduct);
         const userFields = removeUndefined(req.body);
-        const Product = await productRepository.update(_id, userFields);
+        const Product = await productService.updateProduct(_id, userFields);
         res.send(Product);
     };
 
@@ -78,7 +81,9 @@ export default class ProductController {
         const id = req.params.id;
         if (!id) throw new CustomError(404, "id Not Found");
         const _id = parseInt(id);
-        const Product = await productRepository.ondelete(_id);
+        const userId = req.user ? req.user.userId : null;
+        if (!userId) throw new CustomError(404, "userId Not Found");
+        const Product = await productService.deleteProduct(_id);
         res.send(Product);
     };
 

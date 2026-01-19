@@ -1,7 +1,6 @@
 import { articleService } from '../services/articleService';
 import { assert } from 'superstruct';
 import { CreateArticle, PatchArticle } from '../structs/structs';
-import articleRepository from '../repositories/articleRepository';
 import { ExpressHandler } from '../libs/constants';
 import { CustomError } from '../libs/Handler/errorHandler';
 
@@ -58,7 +57,9 @@ export default class ArticleController {
     postArticle: ExpressHandler = async (req, res) => {
         assert(req.body, CreateArticle);
         const { ...userFields } = req.body;
-        const article = await articleRepository.create(userFields);
+        const userId = req.user?.userId;
+        if (!userId) throw new CustomError(401, 'Unauthorized');
+        const article = await articleService.postArticle({ ...userFields, userId });
         res.status(201).send(article);
     };
 
@@ -68,7 +69,9 @@ export default class ArticleController {
         const _id = parseInt(id);
         assert(req.body, PatchArticle);
         const { ...userFields } = req.body;
-        const article = await articleRepository.update(_id, userFields);
+        const userId = req.user?.userId;
+        if (!userId) throw new CustomError(401, 'Unauthorized');
+        const article = await articleService.patchArticleById(_id, { ...userFields, userId });
         res.send(article);
     };
 
@@ -76,7 +79,9 @@ export default class ArticleController {
         const { id } = req.params;
         if (!id) throw new CustomError(404, "id Not Found");
         const _id = parseInt(id);
-        const article = await articleRepository.ondelete(_id);
+        const userId = req.user?.userId;
+        if (!userId) throw new CustomError(401, 'Unauthorized');
+        const article = await articleService.deleteArticleById(_id, userId);
         res.send(article);
     };
 

@@ -33,8 +33,21 @@ export async function GetCommentById(req: ExpressRequest, res: ExpressResponse) 
 export async function PostComment(req: ExpressRequest, res: ExpressResponse) {
     assert(req.body, CreateComment);
     const { content, productId, articleId } = req.body;
+    const userId = req.user?.userId;
+    if (!userId) throw new CustomError(401, 'Unauthorized');
+    // 서비스 호출 (userId 추가됨)
+    const { comment, notification } = await commentService.createComment(userId, content, productId, articleId);
 
-    const comment = await commentService.createComment(content, productId, articleId);
+    // [알림 발송] 알림이 생성되었다면 소켓으로 전송
+    if (notification) {
+        const io = req.app.get('io'); // app.js에서 설정한 io 객체 가져오기
+        if (io) {
+            // 알림 받을 사람(notification.userId)에게만 전송
+            io.to(notification.userId).emit('notification', notification);
+        }
+    }
+
+    // 클라이언트에는 댓글 정보만 주거나, 필요하면 알림 생성 여부도 줄 수 있음
     res.status(201).send(comment);
 }
 
