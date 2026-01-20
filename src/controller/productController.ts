@@ -69,12 +69,23 @@ export default class ProductController {
         const id = req.params.id;
         if (!id) throw new CustomError(404, "id Not Found");
         const _id = parseInt(id);
+
         const userId = req.user ? req.user.userId : null;
         if (!userId) throw new CustomError(404, "userId Not Found");
+
         assert(req.body, PatchProduct);
         const userFields = removeUndefined(req.body);
-        const Product = await productService.updateProduct(_id, userFields);
-        res.send(Product);
+        const { product, notifications } = await productService.updateProduct(_id, userFields);
+        if (notifications && notifications.length > 0) {
+            const io = req.app.get('io');
+            if (io) {
+                notifications.forEach((noti) => {
+                    io.to(noti.userId).emit('notification', noti);
+                });
+            }
+        }
+
+        res.send(product);
     };
 
     DeleteProductById: ExpressHandler = async (req, res) => {
