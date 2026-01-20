@@ -183,6 +183,35 @@
           <button class="secondary" onclick="clearToken()">Clear Token</button>
         </div>
 
+        <!-- User Profile -->
+        <div class="panel">
+          <h3>👤 User Profile (마이페이지)</h3>
+          <div class="input-group">
+            <button onclick="getMe()">Get My Profile</button>
+            <button onclick="getMyProducts()">Get My Products</button>
+          </div>
+          <h4>Update Profile</h4>
+          <div class="input-group">
+            <input type="text" id="me-nickname" placeholder="New Nickname" />
+            <button onclick="updateMe()">Update</button>
+          </div>
+          <h4>Change Password</h4>
+          <div class="input-group">
+            <input
+              type="password"
+              id="me-old-pw"
+              placeholder="Current Password"
+            />
+            <input type="password" id="me-new-pw" placeholder="New Password" />
+            <input
+              type="password"
+              id="me-confirm-pw"
+              placeholder="Confirm New"
+            />
+            <button onclick="updatePassword()">Change PW</button>
+          </div>
+        </div>
+
         <!-- Articles -->
         <div class="panel">
           <h3>📝 Articles (자유게시판)</h3>
@@ -257,6 +286,20 @@
           <div class="input-group">
             <textarea id="cmt-content" placeholder="Comment Content"></textarea>
             <button onclick="submitComment()">Post Comment</button>
+          </div>
+        </div>
+
+        <!-- Notifications -->
+        <div class="panel">
+          <h3>🔔 Notifications (알림)</h3>
+          <div class="input-group">
+            <button onclick="getNotifications()">Get All</button>
+            <button onclick="getUnreadCount()">Get Unread Count</button>
+          </div>
+          <h4>Mark as Read</h4>
+          <div class="input-group">
+            <input type="number" id="noti-id" placeholder="Notification ID" />
+            <button onclick="readNotification()">Read</button>
           </div>
         </div>
       </div>
@@ -342,6 +385,20 @@
         if (socket) socket.disconnect();
       }
 
+      // User Profile
+      const getMe = () => req("/auth/me");
+      const getMyProducts = () => req("/auth/me/products");
+      const updateMe = () =>
+        req("/auth/me", "PATCH", {
+          nickname: document.getElementById("me-nickname").value,
+        });
+      const updatePassword = () =>
+        req("/auth/me/password", "PATCH", {
+          currentPassword: document.getElementById("me-old-pw").value,
+          newPassword: document.getElementById("me-new-pw").value,
+          confirmNewPassword: document.getElementById("me-confirm-pw").value,
+        });
+
       // Socket
       function initSocket(userId) {
         const token = document.getElementById("access-token").value;
@@ -421,6 +478,15 @@
         else if (type === "product") body.productId = Number(id);
         req("/comments", "POST", body);
       };
+
+      // Notifications
+      const getNotifications = () => req("/notifications");
+      const getUnreadCount = () => req("/notifications/count");
+      const readNotification = () =>
+        req(
+          `/notifications/${document.getElementById("noti-id").value}/read`,
+          "PATCH",
+        );
 
       // Init
       const savedToken = localStorage.getItem("accessToken");
