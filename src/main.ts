@@ -8,7 +8,6 @@ import { createServer } from 'http';
 import { Server } from 'socket.io';
 import jwt from 'jsonwebtoken';
 
-
 const app = EXPRESS();
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
