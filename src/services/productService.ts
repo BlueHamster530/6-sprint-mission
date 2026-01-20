@@ -35,7 +35,27 @@ class ProductService {
         return product;
     }
     async updateProduct(id: number, userFields: ProductPublicData) {
-        return await productRepository.update(id, userFields);
+        const oldProduct = await productRepository.findByIdSimple(id);
+
+        const updatedProduct = await productRepository.update(id, userFields);
+        // 3. 알림 로직: 가격이 존재하고, 이전 가격과 다를 때
+        let notifications: any[] = []; // 컨트롤러로 보낼 알림 목록
+
+        if (oldProduct && userFields.price !== undefined && oldProduct.price !== userFields.price) {
+            // 3-1. 찜한 유저들 찾기
+            const likers = await productRepository.findLikers(id);
+
+            // 3-2. 각 유저에게 알림 DB 저장 (Promise.all로 병렬 처리)
+            notifications = await Promise.all(
+                likers.map(async (liker) => {
+                    const message = `찜한 상품 '${updatedProduct.name}'의 가격이 변경되었습니다. (${oldProduct.price}원 -> ${updatedProduct.price}원)`;
+                    return await productRepository.createNotification(liker.userId, message);
+                })
+            );
+        }
+
+        // 4. 결과 반환 (기존에는 product만 줬지만, 이제 알림 목록도 같이 줌)
+        return { product: updatedProduct, notifications };
     }
     async deleteProduct(id: number) {
         return await productRepository.ondelete(id);
