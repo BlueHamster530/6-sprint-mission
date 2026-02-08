@@ -3,4 +3,4 @@ prisma/
 .env
 __http__/
 .env.production
-/dist
+dist/
