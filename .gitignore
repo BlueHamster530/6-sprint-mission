@@ -3,5 +3,3 @@ node_modules/
 __http__/
 dist/
 coverage/
-infra/**/*.png
-infra/**/*.jpg
