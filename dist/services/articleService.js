@@ -26,6 +26,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.articleService = void 0;
 const articleLikeRepository_1 = __importDefault(require("../repositories/articleLikeRepository"));
 const articleRepository_1 = __importDefault(require("../repositories/articleRepository"));
+const errorHandler_1 = require("../libs/Handler/errorHandler");
 class ArticleService {
     likeArticle(userId, articleId) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -52,6 +53,29 @@ class ArticleService {
                 const { articleLikes } = article, rest = __rest(article, ["articleLikes"]);
                 return Object.assign(Object.assign({}, rest), { isLiked: articleLikes.length > 0 });
             });
+        });
+    }
+    postArticle(userFields) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield articleRepository_1.default.create(userFields);
+        });
+    }
+    patchArticleById(id, userFields) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const article = yield articleRepository_1.default.findById(id);
+            if (article.userId !== userFields.userId) {
+                throw new errorHandler_1.CustomError(403, "권한이 없습니다.");
+            }
+            return yield articleRepository_1.default.update(id, userFields);
+        });
+    }
+    deleteArticleById(id, userId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const article = yield articleRepository_1.default.findById(id);
+            if (article.userId !== userId) {
+                throw new errorHandler_1.CustomError(403, "권한이 없습니다.");
+            }
+            return yield articleRepository_1.default.ondelete(id);
         });
     }
 }

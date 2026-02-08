@@ -14,82 +14,53 @@ exports.GetCommentById = GetCommentById;
 exports.PostComment = PostComment;
 exports.PatchCommentById = PatchCommentById;
 exports.DeleteCommentById = DeleteCommentById;
-const constants_1 = require("../libs/constants");
 const superstruct_1 = require("superstruct");
 const structs_1 = require("../structs/structs");
 const errorHandler_1 = require("../libs/Handler/errorHandler");
+const commentService_1 = require("../services/commentService");
 function GetComment(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const { take = '10', cursor, productId, articleId } = req.query;
         const parsedTake = parseInt(take, 10) || 0;
         if (isNaN(parsedTake) || parsedTake <= 0) {
-            return res.status(400).send({ error: 'Invalid "take" parameter.' });
+            throw new errorHandler_1.CustomError(400, 'Invalid "take" parameter.');
         }
-        const whereClause = {};
-        if (productId) {
-            whereClause.productId = Number(productId); // 상품 ID로 필터링
-        }
-        else if (articleId) {
-            whereClause.articleId = Number(articleId); // 게시글 ID로 필터링
-        }
-        const findOptions = {
-            take: parsedTake,
-            where: whereClause,
-            orderBy: {
-                createdAt: 'desc',
-            },
-        };
-        if (cursor) {
-            const parsedCursor = parseInt(cursor, 10);
-            findOptions.skip = 1;
-            findOptions.cursor = {
-                id: parsedCursor,
-            };
-        }
-        const comments = yield constants_1.prismaClient.comment.findMany(findOptions); // 
-        let nextCursor = null;
-        if (comments.length > 0 && comments.length === parsedTake) {
-            nextCursor = comments[comments.length - 1].id;
-        }
-        res.status(200).json({
-            comments,
-            nextCursor,
-        });
+        const parsedCursor = cursor ? parseInt(cursor, 10) : undefined;
+        const parsedProductId = productId ? Number(productId) : undefined;
+        const parsedArticleId = articleId ? Number(articleId) : undefined;
+        const result = yield commentService_1.commentService.getComments(parsedTake, parsedCursor, parsedProductId, parsedArticleId);
+        res.status(200).json(result);
     });
 }
 function GetCommentById(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const { id } = req.params;
-        const paesedId = parseInt(id, 10) || null;
-        if (!paesedId)
-            return new errorHandler_1.CustomError(404, "id Not Found");
-        const Comment = yield constants_1.prismaClient.comment.findUniqueOrThrow({
-            where: {
-                id: paesedId
-            },
-        });
-        res.send(Comment);
+        const parsedId = parseInt(id, 10) || null;
+        if (!parsedId)
+            throw new errorHandler_1.CustomError(404, "id Not Found");
+        const comment = yield commentService_1.commentService.getCommentById(parsedId);
+        res.send(comment);
     });
 }
 function PostComment(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
+        var _a;
         (0, superstruct_1.assert)(req.body, structs_1.CreateComment);
         const { content, productId, articleId } = req.body;
-        if ((productId && articleId) || (!productId && !articleId)) {
-            return res.status(400).json({
-                error: 'Comment must belong to EITHER a Product OR an Article.',
-            });
+        const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId;
+        if (!userId)
+            throw new errorHandler_1.CustomError(401, 'Unauthorized');
+        // 서비스 호출 (userId 추가됨)
+        const { comment, notification } = yield commentService_1.commentService.createComment(userId, content, productId, articleId);
+        // [알림 발송] 알림이 생성되었다면 소켓으로 전송
+        if (notification) {
+            const io = req.app.get('io'); // app.js에서 설정한 io 객체 가져오기
+            if (io) {
+                // 알림 받을 사람(notification.userId)에게만 전송
+                io.to(notification.userId).emit('notification', notification);
+            }
         }
-        if (!content || content.trim() === '') {
-            return res.status(400).json({ error: 'Content cannot be empty.' });
-        }
-        const comment = yield constants_1.prismaClient.comment.create({
-            data: {
-                content: content,
-                productId: productId,
-                articleId: articleId,
-            },
-        });
+        // 클라이언트에는 댓글 정보만 주거나, 필요하면 알림 생성 여부도 줄 수 있음
         res.status(201).send(comment);
     });
 }
@@ -98,35 +69,23 @@ function PatchCommentById(req, res) {
         (0, superstruct_1.assert)(req.body, structs_1.PatchComment);
         const { content } = req.body;
         const { id } = req.params;
-        const paesedId = parseInt(id, 10) || null;
-        if (!paesedId)
-            return new errorHandler_1.CustomError(404, "id Not Found");
-        if (content !== undefined && content.trim() === '') {
-            return res.status(400).json({ error: 'Content cannot be empty.' });
-        }
-        const comment = yield constants_1.prismaClient.comment.update({
-            where: {
-                id: paesedId
-            },
-            data: {
-                content: content,
-            },
-        });
+        const parsedId = parseInt(id, 10) || null;
+        if (!parsedId)
+            throw new errorHandler_1.CustomError(404, "id Not Found");
+        if (!content)
+            throw new errorHandler_1.CustomError(404, "Request body is empty");
+        const comment = yield commentService_1.commentService.updateComment(parsedId, content);
         res.send(comment);
     });
 }
 function DeleteCommentById(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const { id } = req.params;
-        const paesedId = parseInt(id, 10) || null;
-        if (!paesedId)
-            return new errorHandler_1.CustomError(404, "id Not Found");
-        const Comment = yield constants_1.prismaClient.comment.delete({
-            where: {
-                id: paesedId
-            },
-        });
-        res.send(Comment);
+        const parsedId = parseInt(id, 10) || null;
+        if (!parsedId)
+            throw new errorHandler_1.CustomError(404, "id Not Found");
+        const comment = yield commentService_1.commentService.deleteComment(parsedId);
+        res.send(comment);
     });
 }
 //# sourceMappingURL=commentController.js.map

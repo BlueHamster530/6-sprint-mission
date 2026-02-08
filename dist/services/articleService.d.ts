@@ -1,4 +1,4 @@
-import { ArticleFindOptions } from './../libs/interfaces';
+import { ArticleFindOptions, ArticlePublicData, UpdateArticleData } from './../libs/interfaces';
 declare class ArticleService {
     likeArticle(userId: number, articleId: number): Promise<{
         liked: boolean;
@@ -8,6 +8,7 @@ declare class ArticleService {
         id: number;
         createdAt: Date;
         updatedAt: Date;
+        userId: number;
         title: string;
         content: string;
     }>;
@@ -16,9 +17,34 @@ declare class ArticleService {
         id: number;
         createdAt: Date;
         updatedAt: Date;
+        userId: number;
         title: string;
         content: string;
     }[]>;
+    postArticle(userFields: ArticlePublicData): Promise<{
+        id: number;
+        createdAt: Date;
+        updatedAt: Date;
+        userId: number;
+        title: string;
+        content: string;
+    }>;
+    patchArticleById(id: number, userFields: UpdateArticleData): Promise<{
+        id: number;
+        createdAt: Date;
+        updatedAt: Date;
+        userId: number;
+        title: string;
+        content: string;
+    }>;
+    deleteArticleById(id: number, userId: number): Promise<{
+        id: number;
+        createdAt: Date;
+        updatedAt: Date;
+        userId: number;
+        title: string;
+        content: string;
+    }>;
 }
 export declare const articleService: ArticleService;
 export {};

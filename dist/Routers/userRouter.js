@@ -9,7 +9,7 @@ const userController_1 = __importDefault(require("../controller/userController")
 const auth_1 = __importDefault(require("../middlewares/auth"));
 const userRouter = constants_1.EXPRESS.Router();
 const userController = new userController_1.default();
-userRouter.post('/', (0, catchAsync_1.catchAsync)(userController.register));
+userRouter.post('/signup', (0, catchAsync_1.catchAsync)(userController.register));
 userRouter.post('/login', (0, catchAsync_1.catchAsync)(userController.login));
 userRouter.post('/token/refresh', auth_1.default.verifyRefreshToken, (0, catchAsync_1.catchAsync)(userController.refresh));
 userRouter.get('/me', auth_1.default.verifyAccessToken, (0, catchAsync_1.catchAsync)(userController.GetMe));

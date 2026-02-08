@@ -10,6 +10,7 @@ declare function findById(id: number, userId?: number): Promise<{
     id: number;
     createdAt: Date;
     updatedAt: Date;
+    userId: number;
     title: string;
     content: string;
 }>;
@@ -24,6 +25,7 @@ declare function findAll(findOptions: ArticleFindOptions, userId: number): Promi
     id: number;
     createdAt: Date;
     updatedAt: Date;
+    userId: number;
     title: string;
     content: string;
 })[]>;
@@ -31,6 +33,7 @@ declare function create(userFields: ArticlePublicData): Promise<{
     id: number;
     createdAt: Date;
     updatedAt: Date;
+    userId: number;
     title: string;
     content: string;
 }>;
@@ -38,6 +41,7 @@ declare function update(id: number, data: UpdateArticleData): Promise<{
     id: number;
     createdAt: Date;
     updatedAt: Date;
+    userId: number;
     title: string;
     content: string;
 }>;
@@ -45,6 +49,7 @@ declare function ondelete(id: number): Promise<{
     id: number;
     createdAt: Date;
     updatedAt: Date;
+    userId: number;
     title: string;
     content: string;
 }>;

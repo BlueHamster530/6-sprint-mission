@@ -21,6 +21,32 @@ var __rest = (this && this.__rest) || function (s, e) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const constants_1 = require("../libs/constants");
+function findByIdSimple(id) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return constants_1.prismaClient.product.findUnique({
+            where: { id },
+        });
+    });
+}
+function findLikers(productId) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return constants_1.prismaClient.productLike.findMany({
+            where: { productId },
+            select: { userId: true } // 유저 ID만 쏙 뽑아옵니다.
+        });
+    });
+}
+function createNotification(userId, content) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return constants_1.prismaClient.notification.create({
+            data: {
+                userId,
+                content,
+                isRead: false, // 안 읽음 상태로 생성
+            }
+        });
+    });
+}
 function findByUserId(userId) {
     return __awaiter(this, void 0, void 0, function* () {
         return constants_1.prismaClient.product.findMany({
@@ -85,6 +111,9 @@ exports.default = {
     update,
     create,
     ondelete,
-    findByUserId
+    findByUserId,
+    findByIdSimple,
+    findLikers,
+    createNotification
 };
 //# sourceMappingURL=productRepository.js.map

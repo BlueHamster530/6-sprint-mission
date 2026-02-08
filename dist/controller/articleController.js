@@ -19,14 +19,10 @@ var __rest = (this && this.__rest) || function (s, e) {
         }
     return t;
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const articleService_1 = require("../services/articleService");
 const superstruct_1 = require("superstruct");
 const structs_1 = require("../structs/structs");
-const articleRepository_1 = __importDefault(require("../repositories/articleRepository"));
 const errorHandler_1 = require("../libs/Handler/errorHandler");
 class ArticleController {
     constructor() {
@@ -62,52 +58,64 @@ class ArticleController {
             }
             const userId = req.user ? req.user.userId : null;
             if (!userId)
-                return new errorHandler_1.CustomError(404, "UserId Not Found");
+                throw new errorHandler_1.CustomError(404, "UserId Not Found");
             const articles = yield articleService_1.articleService.getArticles(findOptions, userId);
             res.send(articles);
         });
         this.getArticleById = (req, res) => __awaiter(this, void 0, void 0, function* () {
             const { id } = req.params;
             if (!id)
-                return new errorHandler_1.CustomError(404, "id Not Found");
+                throw new errorHandler_1.CustomError(404, "id Not Found");
             const _id = parseInt(id);
             const userId = req.user ? req.user.userId : null;
             if (!userId)
-                return new errorHandler_1.CustomError(404, "userId Not Found");
+                throw new errorHandler_1.CustomError(404, "userId Not Found");
             const article = yield articleService_1.articleService.getArticleById(_id, userId);
             res.send(article);
         });
         this.postArticle = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            var _a;
             (0, superstruct_1.assert)(req.body, structs_1.CreateArticle);
             const userFields = __rest(req.body, []);
-            const article = yield articleRepository_1.default.create(userFields);
+            const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId;
+            if (!userId)
+                throw new errorHandler_1.CustomError(401, 'Unauthorized');
+            const article = yield articleService_1.articleService.postArticle(Object.assign(Object.assign({}, userFields), { userId }));
             res.status(201).send(article);
         });
         this.patchArticleById = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            var _a;
             const { id } = req.params;
             if (!id)
-                return new errorHandler_1.CustomError(404, "id Not Found");
+                throw new errorHandler_1.CustomError(404, "id Not Found");
             const _id = parseInt(id);
             (0, superstruct_1.assert)(req.body, structs_1.PatchArticle);
             const userFields = __rest(req.body, []);
-            const article = yield articleRepository_1.default.update(_id, userFields);
+            const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId;
+            if (!userId)
+                throw new errorHandler_1.CustomError(401, 'Unauthorized');
+            const article = yield articleService_1.articleService.patchArticleById(_id, Object.assign(Object.assign({}, userFields), { userId }));
             res.send(article);
         });
         this.deleteArticleById = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            var _a;
             const { id } = req.params;
             if (!id)
-                return new errorHandler_1.CustomError(404, "id Not Found");
+                throw new errorHandler_1.CustomError(404, "id Not Found");
             const _id = parseInt(id);
-            const article = yield articleRepository_1.default.ondelete(_id);
+            const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId;
+            if (!userId)
+                throw new errorHandler_1.CustomError(401, 'Unauthorized');
+            const article = yield articleService_1.articleService.deleteArticleById(_id, userId);
             res.send(article);
         });
         this.likeArticle = (req, res) => __awaiter(this, void 0, void 0, function* () {
             if (!req.user)
-                return new errorHandler_1.CustomError(404, "user Not Found");
+                throw new errorHandler_1.CustomError(404, "user Not Found");
             const userId = req.user.userId;
             const articleId = req.params.id;
             if (!articleId)
-                return new errorHandler_1.CustomError(404, "articleId Not Found");
+                throw new errorHandler_1.CustomError(404, "articleId Not Found");
             const _articleId = parseInt(articleId);
             const result = yield articleService_1.articleService.likeArticle(userId, _articleId);
             return res.status(200).json(result);

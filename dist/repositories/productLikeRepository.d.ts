@@ -22,6 +22,7 @@ declare function findLikedProductsByUserId(userId: number): Promise<({
         createdAt: Date;
         updatedAt: Date;
         name: string;
+        userId: number;
         description: string | null;
         price: number;
         tags: string[];

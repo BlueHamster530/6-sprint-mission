@@ -11,6 +11,7 @@ declare class UserService {
         createdAt: Date;
         updatedAt: Date;
         name: string;
+        userId: number;
         description: string | null;
         price: number;
         tags: string[];
@@ -21,6 +22,7 @@ declare class UserService {
             createdAt: Date;
             updatedAt: Date;
             name: string;
+            userId: number;
             description: string | null;
             price: number;
             tags: string[];

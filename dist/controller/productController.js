@@ -19,14 +19,10 @@ var __rest = (this && this.__rest) || function (s, e) {
         }
     return t;
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const productService_1 = require("../services/productService");
 const superstruct_1 = require("superstruct");
 const structs_1 = require("../structs/structs");
-const productRepository_1 = __importDefault(require("../repositories/productRepository"));
 const errorHandler_1 = require("../libs/Handler/errorHandler");
 const removeTool_1 = require("./../libs/removeTool");
 class ProductController {
@@ -63,52 +59,69 @@ class ProductController {
             }
             const userId = req.user ? req.user.userId : null;
             if (!userId)
-                return new errorHandler_1.CustomError(404, "UserId Not Found");
+                throw new errorHandler_1.CustomError(404, "UserId Not Found");
             const products = yield productService_1.productService.getProducts(findOptions, userId);
             res.send(products);
         });
         this.GetProductById = (req, res) => __awaiter(this, void 0, void 0, function* () {
             const id = req.params.id;
             if (!id)
-                return new errorHandler_1.CustomError(404, "id Not Found");
+                throw new errorHandler_1.CustomError(400, "id is required");
             const _id = parseInt(id);
             const userId = req.user ? req.user.userId : null;
             if (!userId)
-                return new errorHandler_1.CustomError(404, "userId Not Found");
+                throw new errorHandler_1.CustomError(404, "userId Not Found");
             const product = yield productService_1.productService.getProductById(_id, userId);
             res.send(product);
         });
         this.PostProduct = (req, res) => __awaiter(this, void 0, void 0, function* () {
             (0, superstruct_1.assert)(req.body, structs_1.CreateProduct);
             const userFields = __rest(req.body, []);
-            const product = yield productRepository_1.default.create(userFields);
+            const userId = req.user ? req.user.userId : null;
+            if (!userId)
+                throw new errorHandler_1.CustomError(404, "userId Not Found");
+            const product = yield productService_1.productService.createProducts(Object.assign(Object.assign({}, userFields), { userId }));
             res.status(201).send(product);
         });
         this.PatchProductById = (req, res) => __awaiter(this, void 0, void 0, function* () {
             const id = req.params.id;
             if (!id)
-                return new errorHandler_1.CustomError(404, "id Not Found");
+                throw new errorHandler_1.CustomError(400, "id is required");
             const _id = parseInt(id);
+            const userId = req.user ? req.user.userId : null;
+            if (!userId)
+                throw new errorHandler_1.CustomError(401, "Unauthorized");
             (0, superstruct_1.assert)(req.body, structs_1.PatchProduct);
             const userFields = (0, removeTool_1.removeUndefined)(req.body);
-            const Product = yield productRepository_1.default.update(_id, userFields);
-            res.send(Product);
+            const { product, notifications } = yield productService_1.productService.updateProduct(_id, userFields);
+            if (notifications && notifications.length > 0) {
+                const io = req.app.get('io');
+                if (io) {
+                    notifications.forEach((noti) => {
+                        io.to(noti.userId).emit('notification', noti);
+                    });
+                }
+            }
+            res.send(product);
         });
         this.DeleteProductById = (req, res) => __awaiter(this, void 0, void 0, function* () {
             const id = req.params.id;
             if (!id)
-                return new errorHandler_1.CustomError(404, "id Not Found");
+                throw new errorHandler_1.CustomError(400, "id is required");
             const _id = parseInt(id);
-            const Product = yield productRepository_1.default.ondelete(_id);
+            const userId = req.user ? req.user.userId : null;
+            if (!userId)
+                throw new errorHandler_1.CustomError(404, "userId Not Found");
+            const Product = yield productService_1.productService.deleteProduct(_id);
             res.send(Product);
         });
         this.likeProduct = (req, res) => __awaiter(this, void 0, void 0, function* () {
             if (!req.user)
-                return new errorHandler_1.CustomError(404, "user Not Found");
+                throw new errorHandler_1.CustomError(404, "user Not Found");
             const userId = req.user.userId;
             const productId = req.params.id;
             if (!productId)
-                return new errorHandler_1.CustomError(404, "productId Not Found");
+                throw new errorHandler_1.CustomError(400, "productId is required");
             const _productId = parseInt(productId);
             const result = yield productService_1.productService.likeProduct(userId, _productId);
             return res.status(200).json(result);

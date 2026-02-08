@@ -56,6 +56,36 @@ class ProductService {
             });
         });
     }
+    createProducts(userFields) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const product = yield productRepository_1.default.create(userFields);
+            return product;
+        });
+    }
+    updateProduct(id, userFields) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const oldProduct = yield productRepository_1.default.findByIdSimple(id);
+            const updatedProduct = yield productRepository_1.default.update(id, userFields);
+            // 3. 알림 로직: 가격이 존재하고, 이전 가격과 다를 때
+            let notifications = []; // 컨트롤러로 보낼 알림 목록
+            if (oldProduct && userFields.price !== undefined && oldProduct.price !== userFields.price) {
+                // 3-1. 찜한 유저들 찾기
+                const likers = yield productRepository_1.default.findLikers(id);
+                // 3-2. 각 유저에게 알림 DB 저장 (Promise.all로 병렬 처리)
+                notifications = yield Promise.all(likers.map((liker) => __awaiter(this, void 0, void 0, function* () {
+                    const message = `찜한 상품 '${updatedProduct.name}'의 가격이 변경되었습니다. (${oldProduct.price}원 -> ${updatedProduct.price}원)`;
+                    return yield productRepository_1.default.createNotification(liker.userId, message);
+                })));
+            }
+            // 4. 결과 반환 (기존에는 product만 줬지만, 이제 알림 목록도 같이 줌)
+            return { product: updatedProduct, notifications };
+        });
+    }
+    deleteProduct(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield productRepository_1.default.ondelete(id);
+        });
+    }
 }
 exports.productService = new ProductService();
 //# sourceMappingURL=productService.js.map

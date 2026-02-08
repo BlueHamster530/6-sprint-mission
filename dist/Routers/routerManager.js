@@ -10,10 +10,12 @@ const articleRouter_1 = __importDefault(require("./articleRouter"));
 const commentRouter_1 = __importDefault(require("./commentRouter"));
 const uploadRouter_1 = __importDefault(require("./uploadRouter"));
 const userRouter_1 = __importDefault(require("./userRouter"));
+const notificationRouter_1 = __importDefault(require("./notificationRouter"));
 exports.RouterManager = constants_1.EXPRESS.Router();
 exports.RouterManager.use('/products', productRouter_1.default);
 exports.RouterManager.use('/articles', articleRouter_1.default);
 exports.RouterManager.use('/comments', commentRouter_1.default);
 exports.RouterManager.use('/files', uploadRouter_1.default);
-exports.RouterManager.use('/user', userRouter_1.default);
+exports.RouterManager.use('/auth', userRouter_1.default);
+exports.RouterManager.use('/notifications', notificationRouter_1.default);
 //# sourceMappingURL=routerManager.js.map

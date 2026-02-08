@@ -2,6 +2,7 @@ import { Prisma } from './../libs/constants';
 export interface ProductType {
     id: number;
     name: string;
+    userId: number;
     description?: string;
     price: number;
     tags: string[];
@@ -13,6 +14,7 @@ export interface ProductType {
 export interface ArticleType {
     id: number;
     title: string;
+    userId: number;
     content: string;
     createdAt: Date;
     comments?: CommentType[];
@@ -23,8 +25,10 @@ export interface CommentType {
     content: string;
     createdAt: Date;
     updatedAt: Date;
+    userId: number;
     productId?: number;
     articleId?: number;
+    user: UserType;
     product?: ProductType;
     article?: ArticleType;
 }
