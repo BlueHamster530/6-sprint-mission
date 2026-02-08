@@ -518,7 +518,7 @@
         log(`POST /upload (${file.name})`, "info", "Request");
 
         try {
-          const res = await fetch(API_URL + "/upload", {
+          const res = await fetch(API_URL + "/files", {
             method: "POST",
             headers, // FormData 전송 시 Content-Type은 브라우저가 자동으로 설정함
             body: formData,

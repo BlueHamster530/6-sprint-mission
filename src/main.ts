@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import { PORT, EXPRESS } from './libs/constants';
 import cors from 'cors';
 import { RouterManager } from './Routers/routerManager';
