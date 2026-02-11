@@ -1,6 +1,6 @@
 import { ExpressRequest, ExpressResponse } from '../libs/constants';
 import { CustomError } from '../libs/Handler/errorHandler';
-import { notificationService } from '../services/notificationService';
+import { notificationService } from './notificationService';
 
 export default class NotificationController {
 

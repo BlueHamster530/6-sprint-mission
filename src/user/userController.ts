@@ -1,4 +1,4 @@
-import { userService } from '../services/userService';
+import { userService } from './userService';
 import { ExpressHandler } from '../libs/constants';
 
 export default class UserServiceController {

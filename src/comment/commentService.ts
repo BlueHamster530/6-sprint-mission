@@ -1,4 +1,4 @@
-import commentRepository from '../repositories/commentRepository';
+import commentRepository from './commentRepository';
 import { CustomError } from '../libs/Handler/errorHandler';
 
 class CommentService {

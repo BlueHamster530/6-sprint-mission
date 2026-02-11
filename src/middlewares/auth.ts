@@ -1,6 +1,6 @@
 import { expressjwt } from 'express-jwt'; // express-jwt 라이브러리 임포트 (JWT 검증 미들웨어 생성용)
-import productRepository from '../repositories/productRepository'; // 상품 데이터 접근을 위한 레포지토리 임포트
-import articleRepository from '../repositories/articleRepository'; // 게시글 데이터 접근을 위한 레포지토리 임포트
+import productRepository from './../product/productRepository'; // 상품 데이터 접근을 위한 레포지토리 임포트
+import articleRepository from '../article/articleRepository'; // 게시글 데이터 접근을 위한 레포지토리 임포트
 import { CustomError } from '../libs/Handler/errorHandler'; // 커스텀 에러 핸들러 임포트
 import { ExpressHandler, ExpressRequest, ExpressResponse, ExpressNextFunction } from '../libs/constants'; // 공통 타입 정의 임포트
 import jwt, { JwtPayload } from 'jsonwebtoken'; // jsonwebtoken 라이브러리 및 타입 임포트

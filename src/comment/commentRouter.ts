@@ -7,7 +7,7 @@ import {
     GetCommentById,
     PatchCommentById,
     DeleteCommentById
-} from '../controller/commentController';
+} from './commentController';
 
 const commentRouter = EXPRESS.Router();
 

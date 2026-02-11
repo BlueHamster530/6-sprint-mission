@@ -1,7 +1,7 @@
 import { EXPRESS } from '../libs/constants';
 import { catchAsync } from '../libs/catchAsync';
 import auth from '../middlewares/auth';
-import ProductController from '../controller/productController';
+import ProductController from '../product/productController';
 
 const productRouter = EXPRESS.Router();
 const productController = new ProductController();

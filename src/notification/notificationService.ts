@@ -1,4 +1,4 @@
-import notificationRepository from '../repositories/notificationRepository';
+import notificationRepository from './notificationRepository';
 import { CustomError } from '../libs/Handler/errorHandler';
 
 class NotificationService {

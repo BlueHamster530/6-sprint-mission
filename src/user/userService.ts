@@ -2,11 +2,11 @@ import { assert } from 'superstruct';
 import { CustomError } from '../libs/Handler/errorHandler';
 import userRepository from '../repositories/userRepository';
 import productRepository from '../repositories/productRepository';
-import productLikeRepository from '../repositories/productLikeRepository';
+import productLikeRepository from '../product/productLikeRepository';
 import bcrypt from 'bcrypt';
 import jwt, { JwtPayload, SignOptions } from 'jsonwebtoken';
 import { PatchUser, ChangePassword } from '../structs/userStructs';
-import { UserType, UpdateUserPasswordType, UserPublicData } from "./../libs/interfaces";
+import { UserType, UpdateUserPasswordType, UserPublicData } from "../libs/interfaces";
 
 
 async function hashingPassword(password: string) {

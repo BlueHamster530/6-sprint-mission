@@ -1,4 +1,4 @@
-import { articleService } from '../services/articleService';
+import { articleService } from './articleService';
 import { assert } from 'superstruct';
 import { CreateArticle, PatchArticle } from '../structs/structs';
 import { ExpressHandler } from '../libs/constants';

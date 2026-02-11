@@ -1,9 +1,9 @@
-import { productService } from '../services/productService';
+import { productService } from './productService';
 import { assert } from 'superstruct';
 import { CreateProduct, PatchProduct } from '../structs/structs';
 import { ExpressHandler } from '../libs/constants';
 import { CustomError } from '../libs/Handler/errorHandler';
-import { removeUndefined } from './../libs/removeTool';
+import { removeUndefined } from '../libs/removeTool';
 
 
 export default class ProductController {

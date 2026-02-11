@@ -1,5 +1,5 @@
 import productRepository from '../repositories/productRepository';
-import productLikeRepository from '../repositories/productLikeRepository';
+import productLikeRepository from './productLikeRepository';
 import { ProductFindOptions, ProductPublicData } from '../libs/interfaces';
 import { Notification } from '@prisma/client';
 

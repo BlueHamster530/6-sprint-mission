@@ -2,7 +2,7 @@ import { assert } from 'superstruct';
 import { CreateComment, PatchComment } from '../structs/structs';
 import { ExpressRequest, ExpressResponse } from '../libs/constants';
 import { CustomError } from '../libs/Handler/errorHandler';
-import { commentService } from '../services/commentService';
+import { commentService } from './commentService';
 
 export async function GetComment(req: ExpressRequest, res: ExpressResponse) {
     const { take = '10', cursor, productId, articleId } = req.query;
