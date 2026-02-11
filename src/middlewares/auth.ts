@@ -36,7 +36,7 @@ const verifyRefreshToken: ExpressHandler = expressjwt({ // 리프레시 토큰 �
     getToken: (req) => req.cookies.refreshToken, // 쿠키에서 리프레시 토큰을 가져오도록 설정
 }); // 리프레시 토큰 검증 설정 종료
 
-async function verifyProduectAuth // 상품 수정/삭제 권한 확인 함수
+async function verifyProductAuth // 상품 수정/삭제 권한 확인 함수
     (req: ExpressRequest, res: ExpressResponse, next: ExpressNextFunction) { // 익스프레스 핸들러 인자
     const id = req.params.id || ""; // URL 파라미터에서 상품 ID 추출
     if (!id) throw new CustomError(404, "id가 비 정상적인 값 입니다"); // ID가 없으면 404 에러 발생
@@ -45,12 +45,12 @@ async function verifyProduectAuth // 상품 수정/삭제 권한 확인 함수
     if (!product) { // 상품이 존재하지 않는 경우
         throw new CustomError(404, 'product not found'); // 404 에러 발생
     } // 상품 존재 확인 종료
-    // 사용자 정보가 없거나, 상품의 소유자 ID(현재 product.id로 되어있으나 보통 product.userId)가 요청자 ID와 다르면 권한 없음 처리
-    if (typeof req.user !== 'object' || req.user.userId === undefined || product.id !== req.user.userId) {
+    // 사용자 정보가 없거나, 상품의 소유자 ID가 요청자 ID와 다르면 권한 없음 처리
+    if (typeof req.user !== 'object' || req.user.userId === undefined || product.userId !== req.user.userId) {
         throw new CustomError(403, 'Forbidden'); // 403 금지 에러 발생
     } // 권한 확인 종료
     return next(); // 권한이 확인되면 다음 미들웨어로 진행
-}; // verifyProduectAuth 종료
+}; // verifyProductAuth 종료
 
 async function verifyArticleAuth(req: ExpressRequest, res: ExpressResponse, next: ExpressNextFunction) { // 게시글 수정/삭제 권한 확인 함수
     const id = req.params.id; // URL 파라미터에서 게시글 ID 추출
@@ -60,8 +60,8 @@ async function verifyArticleAuth(req: ExpressRequest, res: ExpressResponse, next
     if (!article) { // 게시글이 존재하지 않는 경우
         throw new CustomError(404, 'article not found'); // 404 에러 발생
     } // 게시글 존재 확인 종료
-    // 사용자 정보가 없거나, 게시글의 소유자 ID(현재 article.id로 되어있으나 보통 article.userId)가 요청자 ID와 다르면 권한 없음 처리
-    if (typeof req.user !== 'object' || req.user.userId === undefined || article.id !== req.user.userId) {
+    // 사용자 정보가 없거나, 게시글의 소유자 ID가 요청자 ID와 다르면 권한 없음 처리
+    if (typeof req.user !== 'object' || req.user.userId === undefined || article.userId !== req.user.userId) {
         throw new CustomError(403, 'Forbidden'); // 403 금지 에러 발생
     } // 권한 확인 종료
     return next(); // 권한이 확인되면 다음 미들웨어로 진행
@@ -70,7 +70,7 @@ async function verifyArticleAuth(req: ExpressRequest, res: ExpressResponse, next
 export default {
     verifyAccessToken,
     softVerifyAccessToken,
-    verifyProduectAuth,
+    verifyProductAuth,
     verifyArticleAuth,
     verifyRefreshToken,
 };

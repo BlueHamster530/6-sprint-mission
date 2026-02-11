@@ -17,8 +17,8 @@ commentRouter.route('/')
 
 commentRouter.route('/:id')
     .get(catchAsync(GetCommentById))
-    .patch(auth.verifyAccessToken, catchAsyncAll(auth.verifyProduectAuth, PatchCommentById))
-    .delete(auth.verifyAccessToken, catchAsyncAll(auth.verifyProduectAuth, DeleteCommentById));
+    .patch(auth.verifyAccessToken, catchAsyncAll(auth.verifyProductAuth, PatchCommentById))
+    .delete(auth.verifyAccessToken, catchAsyncAll(auth.verifyProductAuth, DeleteCommentById));
 
 
 export default commentRouter;
