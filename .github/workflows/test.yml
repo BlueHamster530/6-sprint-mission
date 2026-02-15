@@ -45,10 +45,10 @@ jobs:
       JWT_SECRET: test-secret-key
 
       # AWS 관련 설정 - 실제 AWS 리소스를 사용하는 경우에는 Secrets로 값 주입 필요
-      AWS_S3_REGION: ap-northeast-2
-      AWS_S3_ACCESS_KEY: test-access-key
-      AWS_S3_SECRET_KEY: test-secret-key
-      AWS_S3_BUCKET_NAME: test-bucket
+      AWS_S3_REGION: ${{ secrets.AWS_S3_REGION }}
+      AWS_S3_ACCESS_KEY: ${{ secrets.AWS_S3_ACCESS_KEY }}
+      AWS_S3_SECRET_KEY: ${{ secrets.AWS_S3_SECRET_KEY }}
+      AWS_S3_BUCKET_NAME: ${{ secrets.AWS_S3_BUCKET_NAME }}
 
     steps:
       - name: Checkout code
