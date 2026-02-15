@@ -1,0 +1,28 @@
+name: CD - AWS Deployment
+
+on:
+  push:
+    branches:
+      - main # main 브랜치에 코드가 push(또는 PR merge)될 때 실행
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Execute Deployment on EC2
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.AWS_EC2_HOST }}
+          username: ${{ secrets.AWS_EC2_USERNAME }}
+          key: ${{ secrets.AWS_EC2_PEM_KEY }}
+          script: |
+            # EC2 내부의 프로젝트 폴더로 이동 (경로는 실제 EC2 환경에 맞게 수정)
+            cd /home/ubuntu/pandamarket
+
+            # 최신 코드 가져오기
+            git pull origin main
+
+            # 컨테이너를 다시 빌드하고 백그라운드에서 실행
+            # 기존에 실행 중인 서비스는 자동으로 재시작됨
+            docker-compose up -d --build

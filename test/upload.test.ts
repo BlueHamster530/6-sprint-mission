@@ -28,7 +28,7 @@ describe('Upload API Integration Tests', () => {
         }
     });
 
-    it('POST /files - should upload image to S3 and return URL', async () => {
+    it('POST /upload - should upload image to S3 and return URL', async () => {
         // 테스트에 사용할 이미지 파일 경로
 
         // API 요청 (라우터 경로가 /upload 라고 가정)
