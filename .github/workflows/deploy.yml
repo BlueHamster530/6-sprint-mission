@@ -1,28 +1,27 @@
-name: CD - AWS Deployment
+name: Deploy to EC2
 
 on:
   push:
     branches:
-      - main # main 브랜치에 코드가 push(또는 PR merge)될 때 실행
+      - main
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Execute Deployment on EC2
-        uses: appleboy/ssh-action@v1.0.3
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v0.1.6
         with:
-          host: ${{ secrets.AWS_EC2_HOST }}
-          username: ${{ secrets.AWS_EC2_USERNAME }}
-          key: ${{ secrets.AWS_EC2_PEM_KEY }}
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_PRIVATE_KEY }}
+          port: 22
           script: |
-            # EC2 내부의 프로젝트 폴더로 이동 (경로는 실제 EC2 환경에 맞게 수정)
-            cd /home/ubuntu/pandamarket
-
-            # 최신 코드 가져오기
-            git pull origin main
-
-            # 컨테이너를 다시 빌드하고 백그라운드에서 실행
-            # 기존에 실행 중인 서비스는 자동으로 재시작됨
-            docker-compose up -d --build
+            cd 6-sprint-mission # EC2 인스턴스 내 프로젝트 경로로 진입
+            git pull origin main # 코드 최신화
+            npm install
+            npm run build
+            npm run prisma:deploy # 예: prisma migrate deploy로 마이그레이션 적용하기
+            pm2 reload your-app-name # PM2로 재실행
+            echo "Deployment successful!"
