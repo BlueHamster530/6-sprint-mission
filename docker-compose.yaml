@@ -1,0 +1,33 @@
+# version: "3.8"
+
+# services:
+#   db:
+#     image: postgres:15-alpine
+#     container_name: pandamarket-db
+#     restart: always
+#     environment:
+#       POSTGRES_USER: myuser
+#       POSTGRES_PASSWORD: mypassword
+#       POSTGRES_DB: pandamarket
+#     ports:
+#       - "5432:5432"
+#     volumes:
+#       - pgdata:/var/lib/postgresql/data # DB 데이터 영구 저장
+
+#   app:
+#     build: .
+#     container_name: pandamarket-app
+#     restart: always
+#     ports:
+#       - "3000:3000" # 호스트 머신의 3000포트와 컨테이너의 3000포트 연결
+#     environment:
+#       # db 서비스의 이름('db')을 호스트처럼 사용하여 연결
+#       DATABASE_URL: "postgresql://myuser:mypassword@db:5432/pandamarket?schema=public"
+#     volumes:
+#       # 호스트의 ./uploads 폴더와 컨테이너 내부의 /app/uploads 폴더를 연결 (Volume 활용)
+#       - ./uploads:/app/uploads
+#     depends_on:
+#       - db # db 컨테이너가 먼저 실행된 후 app 컨테이너 실행
+
+# volumes:
+#   pgdata:
