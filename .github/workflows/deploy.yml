@@ -18,14 +18,12 @@ jobs:
           key: ${{ secrets.AWS_EC2_PEM_KEY }}
           port: 22
           script: |
-            # 1. EC2 내부의 프로젝트 폴더로 이동
-            cd 6-sprint-mission 
+            set -e # 🚨 에러 발생 시 즉시 중단 (가짜 성공 방지!)
             
-            # 2. GitHub에서 최신 코드 당겨오기
-            git pull origin main 
+            cd 6-sprint-mission
+            git pull origin main
             
-            # 3. 🚨 기존 PM2 방식 대신 Docker Compose로 빌드 및 백그라운드 실행!
-            # npm install이나 build 명령어는 Dockerfile 내부에서 알아서 처리됩니다.
-            docker-compose up -d --build
+            # 도커 컴포즈가 확실하게 실행되도록 '절대 경로'를 직접 명시!
+            /home/ec2-user/6-sprint-mission/docker-compose up -d --build
             
-            echo "Docker Deployment successful!"
+            echo "Deployment successful!"
