@@ -18,12 +18,15 @@ jobs:
           key: ${{ secrets.AWS_EC2_PEM_KEY }}
           port: 22
           script: |
-            set -e # 🚨 에러 발생 시 즉시 중단 (가짜 성공 방지!)
+            set -e # 🚨 에러 발생 시 즉시 중단
             
-            cd 6-sprint-mission
+            # 1. 프로젝트 폴더로 먼저 이동 (cd 명령어 + 프로젝트 절대 경로)
+            cd /home/ec2-user/6-sprint-mission
+            
+            # 2. 깃허브에서 최신 코드 당겨오기
             git pull origin main
             
-            # 도커 컴포즈가 확실하게 실행되도록 '절대 경로'를 직접 명시!
-            /home/ec2-user/6-sprint-mission/docker-compose up -d --build
+            # 3. 도커 컴포즈 실행 (도커 컴포즈 프로그램의 절대 경로)
+            /usr/local/bin/docker-compose up -d --build
             
             echo "Deployment successful!"
