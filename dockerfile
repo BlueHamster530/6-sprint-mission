@@ -13,6 +13,8 @@ RUN npm ci
 # 소스 코드 전체 복사
 COPY . .
 
+
+RUN npx prisma generate
 RUN npm run build
 
 # 컨테이너에서 접근 가능하도록 포트 노출
